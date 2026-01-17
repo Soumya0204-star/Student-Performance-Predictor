@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Predictor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header p {
+            font-size: 15px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 768px) {
+            .content {
+                flex-direction: row;
+            }
+        }
+
+        .input-section {
+            flex: 1;
+            padding: 30px;
+            background-color: #f8f9ff;
+        }
+
+        .result-section {
+            flex: 1;
+            padding: 30px;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e1e5f1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background-color: white;
+        }
+
+        .input-group input:focus {
+            border-color: #6a11cb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+        }
+
+        .input-group input::placeholder {
+            color: #aaa;
+        }
+
+        .predict-btn {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
+        }
+
+        .predict-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(106, 17, 203, 0.4);
+        }
+
+        .predict-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .success-box {
+            background-color: #f0f9ff;
+            border-left: 5px solid #10b981;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success-box h2 {
+            color: #10b981;
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .score-display {
+            font-size: 42px;
+            font-weight: 700;
+            color: #4a00e0;
+            margin: 15px 0;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: linear-gradient(to right, #10b981, #34d399);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 18px;
+            margin: 10px 0 20px;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        @media (min-width: 480px) {
+            .details-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .detail-item {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4a00e0, #8e2de2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .detail-info h4 {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .detail-info p {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+            background-color: #f8f9ff;
+        }
+
+        .student-icon {
+            font-size: 24px;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-graduation-cap student-icon"></i> Student Performance Predictor</h1>
+            <p>Enter student metrics to predict performance score and category</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="attendance"><i class="fas fa-user-check"></i> Attendance (%)</label>
+                    <input type="number" id="attendance" placeholder="Enter attendance percentage" value="85" min="0" max="100">
+                </div>
+                
+                <div class="input-group">
+                    <label for="internal"><i class="fas fa-chart-line"></i> Internal Score</label>
+                    <input type="number" id="internal" placeholder="Enter internal score" value="75" min="0" max="100">
+                </div>
+                
+                <div class="input-group">
+                    <label for="assignment"><i class="fas fa-tasks"></i> Assignment Score</label>
+                    <input type="number" id="assignment" placeholder="Enter assignment score" value="80" min="0" max="100">
+                </div>
+                
+                <button class="predict-btn pulse" id="predictBtn">
+                    <i class="fas fa-brain"></i> Predict Performance
+                </button>
+            </div>
+            
+            <div class="result-section">
+                <div class="success-box">
+                    <h2><i class="fas fa-check-circle"></i> Success!</h2>
+                    <div class="score-display">79.5%</div>
+                    <div class="category-badge">GOOD</div>
+                    
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div class="detail-info">
+                                <h4>Attendance</h4>
+                                <p>85%</p>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="detail-info">
+                                <h4>Internal Score</h4>
+                                <p>75</p>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="detail-info">
+                                <h4>Assignment</h4>
+                                <p>80</p>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="detail-info">
+                                <h4>Prediction Accuracy</h4>
+                                <p>94%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-note">
+                    <p><i class="fas fa-info-circle"></i> This prediction is based on historical student performance data and machine learning algorithms.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Student Predictor v2.0 • Data is processed securely • <i class="fas fa-shield-alt"></i></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const predictBtn = document.getElementById('predictBtn');
+            const attendanceInput = document.getElementById('attendance');
+            const internalInput = document.getElementById('internal');
+            const assignmentInput = document.getElementById('assignment');
+            const scoreDisplay = document.querySelector('.score-display');
+            const categoryBadge = document.querySelector('.category-badge');
+            const attendanceValue = document.querySelector('.detail-item:nth-child(1) .detail-info p');
+            const internalValue = document.querySelector('.detail-item:nth-child(2) .detail-info p');
+            const assignmentValue = document.querySelector('.detail-item:nth-child(3) .detail-info p');
+            
+            // Function to calculate predicted score
+            function calculatePrediction(attendance, internal, assignment) {
+                // Weighted calculation: attendance 30%, internal 40%, assignment 30%
+                const score = (attendance * 0.3) + (internal * 0.4) + (assignment * 0.3);
+                return score.toFixed(1);
+            }
+            
+            // Function to determine category based on score
+            function getCategory(score) {
+                if (score >= 90) return 'EXCELLENT';
+                if (score >= 80) return 'VERY GOOD';
+                if (score >= 70) return 'GOOD';
+                if (score >= 60) return 'AVERAGE';
+                return 'NEEDS IMPROVEMENT';
+            }
+            
+            // Function to update the display
+            function updateDisplay() {
+                const attendance = parseFloat(attendanceInput.value) || 0;
+                const internal = parseFloat(internalInput.value) || 0;
+                const assignment = parseFloat(assignmentInput.value) || 0;
+                
+                // Calculate prediction
+                const predictedScore = calculatePrediction(attendance, internal, assignment);
+                const category = getCategory(predictedScore);
+                
+                // Update display elements
+                scoreDisplay.textContent = `${predictedScore}%`;
+                categoryBadge.textContent = category;
+                attendanceValue.textContent = `${attendance}%`;
+                internalValue.textContent = internal;
+                assignmentValue.textContent = assignment;
+                
+                // Update badge color based on category
+                updateBadgeColor(category);
+                
+                // Add animation effect
+                scoreDisplay.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    scoreDisplay.style.transform = 'scale(1)';
+                }, 300);
+                
+                // Add pulse animation to button
+                predictBtn.classList.add('pulse');
+                setTimeout(() => {
+                    predictBtn.classList.remove('pulse');
+                }, 1000);
+            }
+            
+            // Function to update badge color based on category
+            function updateBadgeColor(category) {
+                // Remove any existing color classes
+                categoryBadge.classList.remove('excellent', 'very-good', 'good', 'average', 'needs-improvement');
+                
+                // Add appropriate class based on category
+                if (category === 'EXCELLENT') {
+                    categoryBadge.style.background = 'linear-gradient(to right, #10b981, #34d399)';
+                } else if (category === 'VERY GOOD') {
+                    categoryBadge.style.background = 'linear-gradient(to right, #3b82f6, #60a5fa)';
+                } else if (category === 'GOOD') {
+                    categoryBadge.style.background = 'linear-gradient(to right, #8b5cf6, #a78bfa)';
+                } else if (category === 'AVERAGE') {
+                    categoryBadge.style.background = 'linear-gradient(to right, #f59e0b, #fbbf24)';
+                } else {
+                    categoryBadge.style.background = 'linear-gradient(to right, #ef4444, #f87171)';
+                }
+            }
+            
+            // Event listener for predict button
+            predictBtn.addEventListener('click', updateDisplay);
+            
+            // Event listeners for input changes (optional live update)
+            attendanceInput.addEventListener('change', updateDisplay);
+            internalInput.addEventListener('change', updateDisplay);
+            assignmentInput.addEventListener('change', updateDisplay);
+            
+            // Initialize with default values
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>

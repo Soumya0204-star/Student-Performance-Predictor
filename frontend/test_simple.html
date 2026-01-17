@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<body style="padding: 20px; font-family: Arial;">
+    <h2>Simple Flask Test</h2>
+    
+    <button onclick="testHealth()">Test /api/health</button>
+    <button onclick="testPredict()">Test /api/predict</button>
+    
+    <div id="result" style="margin-top: 20px; padding: 15px; background: #f0f0f0;"></div>
+    
+    <script>
+        async function testHealth() {
+            try {
+                const res = await fetch('http://127.0.0.1:5000/api/health');
+                const data = await res.json();
+                document.getElementById('result').innerHTML = 
+                    `<pre>✅ HEALTH OK: ${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (e) {
+                document.getElementById('result').innerHTML = 
+                    `❌ Health Error: ${e.message}`;
+            }
+        }
+        
+        async function testPredict() {
+            try {
+                const res = await fetch('http://127.0.0.1:5000/api/predict', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        attendance: 85,
+                        internal: 75,
+                        assignment: 80
+                    })
+                });
+                const data = await res.json();
+                document.getElementById('result').innerHTML = 
+                    `<pre>✅ PREDICTION OK: ${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (e) {
+                document.getElementById('result').innerHTML = 
+                    `❌ Predict Error: ${e.message}<br>
+                    Status: ${e.status || 'unknown'}`;
+            }
+        }
+        
+        // Auto-test on load
+        testHealth();
+    </script>
+</body>
+</html>

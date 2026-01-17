@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            margin-top: 25px;
+            padding: 25px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .success {
+            background: #e8f5e9;
+            border-left: 5px solid #4CAF50;
+        }
+        
+        .error {
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+        }
+        
+        .loading {
+            background: #e3f2fd;
+            border-left: 5px solid #2196F3;
+        }
+        
+        .score {
+            font-size: 42px;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+            color: #333;
+        }
+        
+        .category {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .excellent { background: #4CAF50; color: white; }
+        .good { background: #2196F3; color: white; }
+        .average { background: #FF9800; color: white; }
+        .poor { background: #f44336; color: white; }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4CAF50;
+        }
+        
+        .dot.offline {
+            background: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Student Performance Predictor</h1>
+        <p class="subtitle">Using Fuzzy Logic System</p>
+        
+        <div class="input-group">
+            <label>✅ Attendance Percentage (0-100)</label>
+            <input type="number" id="attendance" min="0" max="100" value="85">
+        </div>
+        
+        <div class="input-group">
+            <label>📊 Internal Marks (0-100)</label>
+            <input type="number" id="internal" min="0" max="100" value="75">
+        </div>
+        
+        <div class="input-group">
+            <label>📚 Assignment Score (0-100)</label>
+            <input type="number" id="assignment" min="0" max="100" value="80">
+        </div>
+        
+        <button onclick="predict()" id="predictBtn">🔮 Predict Performance</button>
+        
+        <div id="result" class="result"></div>
+        
+        <div class="status">
+            <div class="dot" id="statusDot"></div>
+            <span id="statusText">Checking connection...</span>
+        </div>
+    </div>
+
+    <script>
+        const resultDiv = document.getElementById('result');
+        const predictBtn = document.getElementById('predictBtn');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        
+        // Check connection on load
+        window.onload = async () => {
+            try {
+                const response = await fetch('/api/health');
+                if (response.ok) {
+                    statusDot.className = 'dot';
+                    statusText.textContent = 'Connected to server';
+                    console.log('✅ Server connected');
+                }
+            } catch (e) {
+                statusDot.className = 'dot offline';
+                statusText.textContent = 'Server offline';
+                console.warn('⚠️ Server not connected');
+            }
+        };
+        
+        // Main prediction function
+        async function predict() {
+            // Get values
+            const attendance = document.getElementById('attendance').value;
+            const internal = document.getElementById('internal').value;
+            const assignment = document.getElementById('assignment').value;
+            
+            // Validate
+            if (!attendance || !internal || !assignment) {
+                showError('Please fill all fields');
+                return;
+            }
+            
+            // Show loading
+            resultDiv.innerHTML = `
+                <div style="text-align: center;">
+                    <h3>🔄 Processing...</h3>
+                    <p>Running fuzzy logic inference...</p>
+                </div>
+            `;
+            resultDiv.className = 'result loading';
+            resultDiv.style.display = 'block';
+            
+            predictBtn.disabled = true;
+            predictBtn.innerHTML = 'Processing...';
+            
+            try {
+                // Send request
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        attendance: parseFloat(attendance),
+                        internal: parseFloat(internal),
+                        assignment: parseFloat(assignment)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Prediction failed');
+                }
+                
+                // Display result
+                displayResult(data);
+                
+            } catch (error) {
+                showError(`Error: ${error.message}<br><br>
+                    Please ensure:<br>
+                    1. Server is running<br>
+                    2. All fields are valid numbers`);
+            } finally {
+                predictBtn.disabled = false;
+                predictBtn.innerHTML = '🔮 Predict Performance';
+            }
+        }
+        
+        function displayResult(data) {
+            const score = data.result?.score || 0;
+            const category = data.result?.category || 'UNKNOWN';
+            
+            // Determine category class
+            let categoryClass = 'average';
+            if (category.includes('EXCELLENT')) categoryClass = 'excellent';
+            else if (category.includes('GOOD')) categoryClass = 'good';
+            else if (category.includes('AVERAGE')) categoryClass = 'average';
+            else if (category.includes('NEEDS')) categoryClass = 'poor';
+            
+            resultDiv.innerHTML = `
+                <h3 style="text-align: center;">✅ Prediction Complete</h3>
+                <div class="score">${score.toFixed(1)}%</div>
+                <div class="category ${categoryClass}">${category}</div>
+                <p style="text-align: center; margin: 15px 0;">${data.result?.interpretation || ''}</p>
+                <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                        <span>Attendance:</span>
+                        <span><b>${data.inputs?.attendance}%</b></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                        <span>Internal Marks:</span>
+                        <span><b>${data.inputs?.internal}</b></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                        <span>Assignment:</span>
+                        <span><b>${data.inputs?.assignment}</b></span>
+                    </div>
+                </div>
+            `;
+            resultDiv.className = 'result success';
+            resultDiv.style.display = 'block';
+        }
+        
+        function showError(message) {
+            resultDiv.innerHTML = `
+                <div style="text-align: center;">
+                    <h3>❌ Error</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+            resultDiv.className = 'result error';
+            resultDiv.style.display = 'block';
+        }
+        
+        // Enter key support
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') predict();
+            });
+        });
+    </script>
+</body>
+</html>
