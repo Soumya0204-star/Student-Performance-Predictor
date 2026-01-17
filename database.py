@@ -1,3 +1,4 @@
+# CREATOR: SOUMYA | GitHub: https://github.com/Soumya0204-star/Student-Performance-Predictor
 """
 Database module for storing student records and predictions
 """
