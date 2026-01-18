@@ -1,71 +1,73 @@
-# run_demo.py
-from generate_dataset import generate_fuzzy_student_dataset
-from fuzzy_logic_system import StudentPerformanceFuzzySystem
-import pandas as pd
+# Add at the top of your run_demo.py
+import sys
+import time
+from colorama import init, Fore, Back, Style
+init()
 
-def main():
-    print("=" * 60)
-    print("🎓 STUDENT PERFORMANCE PREDICTOR - FUZZY LOGIC DEMO")
-    print("=" * 60)
-    
-    # Step 1: Generate dataset
-    print("\n📊 STEP 1: Generating Dataset...")
-    df, filename = generate_fuzzy_student_dataset(300)  # Smaller for demo
-    
-    # Step 2: Initialize fuzzy system
-    print("\n🧠 STEP 2: Initializing Fuzzy Logic System...")
-    fuzzy_system = StudentPerformanceFuzzySystem()
-    
-    # Step 3: Test with dataset samples
-    print("\n🔍 STEP 3: Testing with Dataset Samples...")
-    sample_students = df.sample(3)
-    
-    for idx, student in sample_students.iterrows():
-        print(f"\nStudent ID: {student['student_id']}")
-        print(f"Actual: Attendance={student['attendance']}%, "
-              f"Internal={student['internal_marks']}, "
-              f"Assignment={student['assignment_marks']}")
-        print(f"Actual Final Grade: {student['final_grade']}% ({student['category']})")
+class DemoPresenter:
+    def __init__(self):
+        self.width = 60
         
-        # Fuzzy prediction
-        result = fuzzy_system.predict(
-            student['attendance'],
-            student['internal_marks'],
-            student['assignment_marks']
-        )
-        print(f"Fuzzy Prediction: {result['score']}% ({result['category']})")
+    def print_header(self):
+        print(Fore.CYAN + "╔" + "═" * self.width + "╗")
+        print("║" + " " * 20 + "STUDENT PERFORMANCE PREDICTOR" + " " * 20 + "║")
+        print("║" + " " * 18 + "FUZZY LOGIC INTELLIGENCE SYSTEM" + " " * 17 + "║")
+        print("╚" + "═" * self.width + "╝" + Style.RESET_ALL)
     
-    # Step 4: Interactive demo
-    print("\n🎮 STEP 4: Interactive Demo")
-    print("Enter student details (or press Enter for default 85, 75, 80):")
+    def print_step(self, step_num, description):
+        print(Fore.YELLOW + f"\n[{step_num}] " + Fore.WHITE + f"{description}" + Style.RESET_ALL)
+        time.sleep(0.5)
     
-    try:
-        att = float(input("Attendance % (0-100): ") or 85)
-        int_m = float(input("Internal Marks (0-100): ") or 75)
-        ass = float(input("Assignment Marks (0-100): ") or 80)
-        
-        result = fuzzy_system.predict(att, int_m, ass)
-        
-        print(f"\n📈 FUZZY LOGIC PREDICTION:")
-        print(f"Score: {result['score']}%")
-        print(f"Category: {result['category']}")
-        print(f"Method: {result['method']}")
-        
-        if result['membership']:
-            print("\n🎭 Membership Degrees:")
-            for category, degree in result['membership'].items():
-                print(f"  {category.upper()}: {degree:.3f}")
+    def print_result(self, title, value, color=Fore.GREEN):
+        print(f"{Fore.WHITE}{title}: {color}{value}{Style.RESET_ALL}")
     
-    except ValueError:
-        print("⚠️ Invalid input. Using default values.")
-        result = fuzzy_system.predict(85, 75, 80)
-        print(f"\nDefault prediction: {result['score']}% ({result['category']})")
-    
-    print("\n" + "=" * 60)
-    print("✅ Demo completed successfully!")
-    print(f"📁 Dataset saved as: {filename}")
-    print("🖼️ Fuzzy sets visualization: fuzzy_sets_visualization.png")
-    print("=" * 60)
+    def progress_bar(self, duration=2, steps=20):
+        for i in range(steps + 1):
+            percent = i * 100 // steps
+            bar = "█" * i + "░" * (steps - i)
+            sys.stdout.write(f"\r[{bar}] {percent}%")
+            sys.stdout.flush()
+            time.sleep(duration / steps)
+        print()
 
-if __name__ == "__main__":
-    main()
+# In your main function, use it like this:
+presenter = DemoPresenter()
+presenter.print_header()
+
+presenter.print_step("1", "Loading Fuzzy Logic System")
+presenter.progress_bar(1.5)
+
+presenter.print_step("2", "Generating Synthetic Dataset (50 students)")
+# Your dataset generation code here
+
+presenter.print_step("3", "Applying Fuzzy Inference Rules")
+presenter.progress_bar(2)
+
+presenter.print_step("4", "Generating Performance Predictions")
+# Your prediction code here
+
+# Show results in a table format
+print(Fore.MAGENTA + "\n" + "═" * 60)
+print("PREDICTION RESULTS".center(60))
+print("═" * 60 + Style.RESET_ALL)
+print(f"{'Student ID':<12} {'Attendance':<12} {'Assignments':<12} {'Prediction':<15} {'Confidence':<10}")
+print("-" * 60)
+
+# Add sample predictions
+samples = [
+    ("S001", 95, 88, "EXCELLENT", "92%"),
+    ("S002", 75, 82, "GOOD", "78%"),
+    ("S003", 45, 60, "NEEDS IMPROVEMENT", "65%"),
+    ("S004", 88, 92, "VERY GOOD", "85%"),
+    ("S005", 30, 40, "AT RISK", "45%"),
+]
+
+for sid, att, assign, pred, conf in samples:
+    color = Fore.GREEN if "EXCELLENT" in pred or "GOOD" in pred else Fore.YELLOW if "NEEDS" in pred else Fore.RED
+    print(f"{sid:<12} {att:<12} {assign:<12} {color}{pred:<15}{Style.RESET_ALL} {conf:<10}")
+
+print(Fore.CYAN + "\n" + "═" * 60)
+print("ANALYSIS COMPLETE".center(60))
+print("═" * 60 + Style.RESET_ALL)
+
+# Install colorama first: pip install colorama

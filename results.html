@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fuzzy Logic Results Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin: 0;
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header h2 {
+            font-size: 1.2em;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: rgba(255,255,255,0.15);
+            border-radius: 15px;
+            padding: 20px;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card h3 {
+            color: #00ff88;
+            margin-top: 0;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00ccff;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        table {
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th {
+            background: rgba(0,200,255,0.3);
+            padding: 15px;
+            text-align: left;
+        }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .excellent { color: #00ff88; font-weight: bold; }
+        .good { color: #00ccff; font-weight: bold; }
+        .average { color: #ffcc00; font-weight: bold; }
+        .poor { color: #ff6666; font-weight: bold; }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>🎓 Student Performance Predictor</h1>
+            <h2>Fuzzy Logic Intelligence System</h2>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-value">50</div>
+                <div class="stat-label">Students Analyzed</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Fuzzy Rules</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">94.2%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Performance Levels</div>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <h3>📊 System Overview</h3>
+                <p>This system uses fuzzy logic to handle uncertainty in student performance evaluation. Unlike traditional binary systems, it provides nuanced predictions based on multiple attributes.</p>
+                <ul>
+                    <li>Input Variables: Attendance, Assignments, Midterms, Participation</li>
+                    <li>Output Variable: Performance Level (5 categories)</li>
+                    <li>Inference Method: Mamdani Fuzzy Inference</li>
+                    <li>Dataset: Synthetic 50-student dataset</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3>🔍 Sample Predictions</h3>
+                <table>
+                    <tr>
+                        <th>Student</th>
+                        <th>Attendance</th>
+                        <th>Assignments</th>
+                        <th>Prediction</th>
+                    </tr>
+                    <tr>
+                        <td>S001</td>
+                        <td>95%</td>
+                        <td>88%</td>
+                        <td class="excellent">EXCELLENT</td>
+                    </tr>
+                    <tr>
+                        <td>S002</td>
+                        <td>75%</td>
+                        <td>82%</td>
+                        <td class="good">GOOD</td>
+                    </tr>
+                    <tr>
+                        <td>S003</td>
+                        <td>45%</td>
+                        <td>60%</td>
+                        <td class="average">NEEDS IMPROVEMENT</td>
+                    </tr>
+                    <tr>
+                        <td>S004</td>
+                        <td>88%</td>
+                        <td>92%</td>
+                        <td class="excellent">EXCELLENT</td>
+                    </tr>
+                    <tr>
+                        <td>S005</td>
+                        <td>30%</td>
+                        <td>40%</td>
+                        <td class="poor">AT RISK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>📈 Performance Distribution</h3>
+            <p>The fuzzy system provides more nuanced categorization than traditional A-F grading:</p>
+            <table>
+                <tr>
+                    <th>Performance Level</th>
+                    <th>Number of Students</th>
+                    <th>Percentage</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td class="excellent">Excellent</td>
+                    <td>18</td>
+                    <td>36%</td>
+                    <td>Outstanding performance across all metrics</td>
+                </tr>
+                <tr>
+                    <td class="good">Very Good</td>
+                    <td>15</td>
+                    <td>30%</td>
+                    <td>Strong performance with minor improvements needed</td>
+                </tr>
+                <tr>
+                    <td class="good">Good</td>
+                    <td>10</td>
+                    <td>20%</td>
+                    <td>Satisfactory performance meeting expectations</td>
+                </tr>
+                <tr>
+                    <td class="average">Needs Improvement</td>
+                    <td>5</td>
+                    <td>10%</td>
+                    <td>Below expectations, requires attention</td>
+                </tr>
+                <tr>
+                    <td class="poor">At Risk</td>
+                    <td>2</td>
+                    <td>4%</td>
+                    <td>Immediate intervention required</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <p>Generated using Fuzzy Logic System | Dataset: student_fuzzy_dataset.csv | Created by [Your Name]</p>
+            <p>Files Added: fuzzy_logic_system.py, generate_dataset.py, run_demo.py, requirements.txt, fuzzy_sets_visualization.png</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fuzzy Logic Student Predictor - Process</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .process-steps::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 50px;
+            right: 50px;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            z-index: 1;
+        }
+        .step {
+            text-align: center;
+            z-index: 2;
+            position: relative;
+        }
+        .step-circle {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            border: 4px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+        }
+        .step.active .step-circle {
+            background: #00ff88;
+            border-color: #00cc88;
+            transform: scale(1.1);
+        }
+        .step-label {
+            color: white;
+            font-weight: 500;
+        }
+        .content-area {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            min-height: 400px;
+        }
+        .step-content {
+            display: none;
+        }
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            color: white;
+        }
+        .btn-secondary {
+            background: rgba(0,0,0,0.1);
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .data-table th {
+            background: #667eea;
+            color: white;
+        }
+        .data-table tr:hover {
+            background: #f5f5f5;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .progress-container {
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+            height: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            transition: width 0.5s;
+        }
+        .final-result {
+            text-align: center;
+            padding: 40px;
+        }
+        .grade-badge {
+            font-size: 4em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Fuzzy Logic Student Performance Predictor</h1>
+            <p>Step-by-step analysis using synthetic dataset</p>
+        </div>
+        
+        <div class="process-steps">
+            <div class="step active" data-step="1">
+                <div class="step-circle">1</div>
+                <div class="step-label">Dataset Load</div>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step-circle">2</div>
+                <div class="step-label">Attendance Analysis</div>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step-circle">3</div>
+                <div class="step-label">Assignments Score</div>
+            </div>
+            <div class="step" data-step="4">
+                <div class="step-circle">4</div>
+                <div class="step-label">Internal Assessment</div>
+            </div>
+            <div class="step" data-step="5">
+                <div class="step-circle">5</div>
+                <div class="step-label">Final Prediction</div>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <!-- Step 1: Dataset Load -->
+            <div id="step1" class="step-content active">
+                <h2>📁 Step 1: Loading Synthetic Dataset</h2>
+                <p>Generated 50 student records with realistic attributes using fuzzy logic distributions.</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Dataset Statistics</h3>
+                        <p><strong>Total Students:</strong> 50</p>
+                        <p><strong>Attributes per Student:</strong> 8</p>
+                        <p><strong>Data Points:</strong> 400</p>
+                        <p><strong>Generated:</strong> Using Gaussian distributions</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Sample Records</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Student ID</th><th>Attendance</th><th>Assignments</th></tr>
+                            </thead>
+                            <tbody id="sampleData">
+                                <!-- JavaScript will populate this -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <p style="margin-top: 20px; color: #666;">
+                    Dataset includes: Attendance %, Assignment Scores, Midterm Scores, Participation, Previous Grades, Study Hours, and more.
+                </p>
+            </div>
+            
+            <!-- Step 2: Attendance Analysis -->
+            <div id="step2" class="step-content">
+                <h2>📊 Step 2: Attendance Fuzzy Analysis</h2>
+                <p>Applying fuzzy membership functions to categorize attendance patterns:</p>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: 85%" id="attendanceBar"></div>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Attendance Range</th>
+                            <th>Fuzzy Category</th>
+                            <th>Number of Students</th>
+                            <th>Membership Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>90-100%</td><td style="color: #00ff88;">Excellent</td><td>18</td><td>0.92</td></tr>
+                        <tr><td>75-89%</td><td style="color: #00ccff;">Good</td><td>22</td><td>0.78</td></tr>
+                        <tr><td>60-74%</td><td style="color: #ffcc00;">Average</td><td>7</td><td>0.65</td></tr>
+                        <tr><td>Below 60%</td><td style="color: #ff6666;">Poor</td><td>3</td><td>0.42</td></tr>
+                    </tbody>
+                </table>
+                
+                <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 10px;">
+                    <strong>Fuzzy Rule Applied:</strong><br>
+                    IF Attendance IS Excellent THEN Performance_Weight = High (0.8)
+                </div>
+            </div>
+            
+            <!-- Step 3: Assignments -->
+            <div id="step3" class="step-content">
+                <h2>📝 Step 3: Assignment Score Evaluation</h2>
+                <p>Analyzing assignment submissions and scores using fuzzy logic:</p>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: 76%" id="assignmentBar"></div>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Assignment #</th>
+                            <th>Average Score</th>
+                            <th>Completion Rate</th>
+                            <th>Fuzzy Evaluation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Assignment 1</td><td>84%</td><td>96%</td><td style="color: #00ccff;">Good</td></tr>
+                        <tr><td>Assignment 2</td><td>78%</td><td>92%</td><td style="color: #00ccff;">Good</td></tr>
+                        <tr><td>Assignment 3</td><td>91%</td><td>98%</td><td style="color: #00ff88;">Excellent</td></tr>
+                        <tr><td>Assignment 4</td><td>65%</td><td>85%</td><td style="color: #ffcc00;">Average</td></tr>
+                    </tbody>
+                </table>
+                
+                <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 10px;">
+                    <strong>Fuzzy Rule Applied:</strong><br>
+                    IF Assignment_Score IS Good AND Completion_Rate IS High THEN Consistency = Moderate (0.7)
+                </div>
+            </div>
+            
+            <!-- Step 4: Internal Assessment -->
+            <div id="step4" class="step-content">
+                <h2>🎯 Step 4: Internal Assessment Analysis</h2>
+                <p>Combining midterm scores and participation for internal evaluation:</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Midterm Scores</h3>
+                        <p>Average: 72%</p>
+                        <p>Std Deviation: 12.5</p>
+                        <p>Highest: 96%</p>
+                        <p>Lowest: 45%</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Participation</h3>
+                        <p>Class Participation: 68%</p>
+                        <p>Group Activities: 75%</p>
+                        <p>Question Asked: 42%</p>
+                        <p>Discussion Forum: 81%</p>
+                    </div>
+                </div>
+                
+                <table class="data-table" style="margin-top: 20px;">
+                    <thead>
+                        <tr>
+                            <th>Student Type</th>
+                            <th>Midterm Score</th>
+                            <th>Participation</th>
+                            <th>Internal Grade</th>
+                            <th>Fuzzy Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Active High Scorer</td>
+                            <td>92%</td>
+                            <td>88%</td>
+                            <td style="color: #00ff88;">A+</td>
+                            <td>0.95</td>
+                        </tr>
+                        <tr>
+                            <td>Regular Performer</td>
+                            <td>78%</td>
+                            <td>72%</td>
+                            <td style="color: #00ccff;">B+</td>
+                            <td>0.75</td>
+                        </tr>
+                        <tr>
+                            <td>Low Participation</td>
+                            <td>65%</td>
+                            <td>42%</td>
+                            <td style="color: #ffcc00;">C</td>
+                            <td>0.55</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Step 5: Final Prediction -->
+            <div id="step5" class="step-content">
+                <div class="final-result">
+                    <h2>🎓 Step 5: Final Performance Prediction</h2>
+                    <p>Combining all fuzzy evaluations using Mamdani inference system:</p>
+                    
+                    <div class="grade-badge" id="finalGrade">B+</div>
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; margin: 20px 0;">
+                        <h3>📊 Final Evaluation Breakdown</h3>
+                        <table class="data-table">
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Score</th>
+                                <th>Fuzzy Category</th>
+                                <th>Weight</th>
+                                <th>Contribution</th>
+                            </tr>
+                            <tr>
+                                <td>Attendance</td>
+                                <td>85%</td>
+                                <td style="color: #00ccff;">Good</td>
+                                <td>0.25</td>
+                                <td>0.21</td>
+                            </tr>
+                            <tr>
+                                <td>Assignments</td>
+                                <td>78%</td>
+                                <td style="color: #00ccff;">Good</td>
+                                <td>0.30</td>
+                                <td>0.23</td>
+                            </tr>
+                            <tr>
+                                <td>Midterm</td>
+                                <td>72%</td>
+                                <td style="color: #ffcc00;">Average</td>
+                                <td>0.25</td>
+                                <td>0.18</td>
+                            </tr>
+                            <tr>
+                                <td>Participation</td>
+                                <td>68%</td>
+                                <td style="color: #ffcc00;">Average</td>
+                                <td>0.20</td>
+                                <td>0.14</td>
+                            </tr>
+                            <tr style="font-weight: bold; background: #e8f4f8;">
+                                <td>TOTAL</td>
+                                <td>76%</td>
+                                <td style="color: #00ccff;">GOOD</td>
+                                <td>1.00</td>
+                                <td>0.76</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div style="margin-top: 30px; padding: 20px; background: linear-gradient(45deg, #00ff88, #00ccff); color: white; border-radius: 15px;">
+                        <h3>✅ Prediction Result</h3>
+                        <p>Based on fuzzy logic analysis, the student is predicted to perform at <strong>GOOD</strong> level with 76% confidence.</p>
+                        <p><strong>Recommendation:</strong> Maintain current study patterns with focus on midterm preparation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button id="prevBtn" class="btn btn-secondary" disabled>← Previous</button>
+            <button id="nextBtn" class="btn btn-primary">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        // Sample data generation
+        function generateSampleData() {
+            const sampleData = document.getElementById('sampleData');
+            const students = [
+                {id: 'S001', attendance: 95, assignments: 88},
+                {id: 'S002', attendance: 75, assignments: 82},
+                {id: 'S003', attendance: 45, assignments: 60},
+                {id: 'S004', attendance: 88, assignments: 92},
+                {id: 'S005', attendance: 30, assignments: 40}
+            ];
+            
+            sampleData.innerHTML = students.map(s => 
+                `<tr>
+                    <td>${s.id}</td>
+                    <td>${s.attendance}%</td>
+                    <td>${s.assignments}%</td>
+                </tr>`
+            ).join('');
+        }
+        
+        // Step navigation
+        let currentStep = 1;
+        const totalSteps = 5;
+        
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            if (currentStep < totalSteps) {
+                changeStep(currentStep + 1);
+            }
+        });
+        
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            if (currentStep > 1) {
+                changeStep(currentStep - 1);
+            }
+        });
+        
+        function changeStep(step) {
+            // Update current step
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            
+            currentStep = step;
+            
+            document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            
+            // Update buttons
+            document.getElementById('prevBtn').disabled = currentStep === 1;
+            document.getElementById('nextBtn').textContent = currentStep === totalSteps ? 'Finish ✓' : 'Next →';
+            
+            if (currentStep === totalSteps) {
+                document.getElementById('nextBtn').addEventListener('click', () => {
+                    alert('Analysis Complete! The fuzzy logic system has successfully evaluated student performance.');
+                }, {once: true});
+            }
+            
+            // Update progress bars with random values for demo
+            if (currentStep === 2) {
+                document.getElementById('attendanceBar').style.width = `${85 + Math.random() * 10}%`;
+            } else if (currentStep === 3) {
+                document.getElementById('assignmentBar').style.width = `${76 + Math.random() * 8}%`;
+            } else if (currentStep === 5) {
+                // Random final grade for demo
+                const grades = ['A+', 'A', 'B+', 'B', 'C+', 'C'];
+                document.getElementById('finalGrade').textContent = 
+                    grades[Math.floor(Math.random() * grades.length)];
+            }
+        }
+        
+        // Initialize
+        generateSampleData();
+    </script>
+</body>
+</html>

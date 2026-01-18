@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EduFuzz - Student Performance Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        /* Step Container */
+        .step-container {
+            display: none;
+            min-height: 100vh;
+            padding: 40px;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        .step-container.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Step 1: Welcome Page */
+        .welcome-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(102, 126, 234, 0.1), transparent);
+        }
+        
+        .logo {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .title {
+            font-size: 4.5em;
+            background: linear-gradient(45deg, #00ff88, #00ccff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+        
+        .tagline {
+            font-size: 1.5em;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            max-width: 800px;
+            line-height: 1.6;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 50px 0;
+            max-width: 1000px;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #00ccff;
+        }
+        
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        .feature-title {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #00ccff;
+        }
+        
+        .start-btn {
+            padding: 20px 60px;
+            font-size: 1.4em;
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 204, 255, 0.4);
+        }
+        
+        /* Step 2: Dataset Preview */
+        .dataset-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .dataset-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .dataset-title {
+            font-size: 2.8em;
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        
+        .dataset-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 5px;
+        }
+        
+        .dataset-table-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 40px 0;
+            overflow-x: auto;
+        }
+        
+        .dataset-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .dataset-table th {
+            background: rgba(0, 204, 255, 0.2);
+            padding: 15px;
+            text-align: left;
+            color: #00ccff;
+            font-weight: 600;
+        }
+        
+        .dataset-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dataset-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Step 3: Input Form */
+        .input-form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .form-header h2 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #00ff88;
+        }
+        
+        .input-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .input-field {
+            background: rgba(255, 255, 255, 0.07);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .input-field:focus-within {
+            border-color: #00ccff;
+            transform: translateY(-5px);
+        }
+        
+        .input-field label {
+            display: block;
+            margin-bottom: 12px;
+            color: #00ccff;
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+        
+        .input-field input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .input-field input:focus {
+            border-color: #00ff88;
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.2);
+        }
+        
+        /* Step 4: Results */
+        .results-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .result-hero {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .result-grade {
+            font-size: 6em;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00ff88, #00ccff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 20px 0;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .result-label {
+            font-size: 1.5em;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            margin: 50px 0;
+        }
+        
+        .chart-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .chart-title {
+            color: #00ccff;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+        
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            height: 250px;
+            gap: 20px;
+            padding: 20px 0;
+        }
+        
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, #00ccff, #00ff88);
+            border-radius: 10px 10px 0 0;
+            position: relative;
+            transition: height 1s ease;
+        }
+        
+        .bar-label {
+            position: absolute;
+            bottom: -30px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.9em;
+            color: #aaa;
+        }
+        
+        .bar-value {
+            position: absolute;
+            top: -30px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding: 0 20px;
+        }
+        
+        .nav-btn {
+            padding: 15px 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(0, 204, 255, 0.2);
+            border-color: #00ccff;
+            transform: translateY(-3px);
+        }
+        
+        .nav-btn.primary {
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            border: none;
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 800px;
+            z-index: 100;
+        }
+        
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        
+        .progress-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00ff88, #00ccff);
+            transform: translateY(-50%);
+            z-index: 2;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-step {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: relative;
+            z-index: 3;
+            transition: all 0.3s;
+        }
+        
+        .progress-step.active {
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 204, 255, 0.5);
+        }
+        
+        .progress-label {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+        
+        .progress-step.active .progress-label {
+            opacity: 1;
+            color: #00ccff;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .feature-grid,
+            .dataset-stats,
+            .input-row,
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .title {
+                font-size: 2.8em;
+            }
+            
+            .step-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-line" id="progressLine"></div>
+            <div class="progress-step active" data-step="1">
+                <span>🎮</span>
+                <div class="progress-label">Welcome</div>
+            </div>
+            <div class="progress-step" data-step="2">
+                <span>📊</span>
+                <div class="progress-label">Dataset</div>
+            </div>
+            <div class="progress-step" data-step="3">
+                <span>⌨️</span>
+                <div class="progress-label">Input</div>
+            </div>
+            <div class="progress-step" data-step="4">
+                <span>📈</span>
+                <div class="progress-label">Results</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 1: Welcome -->
+    <div id="step1" class="step-container active">
+        <div class="welcome-page">
+            <div class="logo">🧠⚡</div>
+            <h1 class="title">EDU-FUZZ</h1>
+            <p class="tagline">
+                Revolutionizing student performance prediction with cutting-edge fuzzy logic intelligence. 
+                Experience the future of educational analytics.
+            </p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-title">Precision Forecasting</div>
+                    <p>Advanced fuzzy algorithms predict performance with 94.2% accuracy</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <div class="feature-title">Real-time Analytics</div>
+                    <p>Instant visualization of student data patterns and trends</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <div class="feature-title">Intelligent Insights</div>
+                    <p>Smart recommendations based on fuzzy inference rules</p>
+                </div>
+            </div>
+            
+            <button class="start-btn" onclick="nextStep()">
+                LAUNCH PREDICTOR 🚀
+                <span style="font-size: 0.8em;">→</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Step 2: Dataset Preview -->
+    <div id="step2" class="step-container">
+        <div class="dataset-container">
+            <div class="dataset-header">
+                <h2 class="dataset-title">SYNTHETIC DATASET INTELLIGENCE</h2>
+                <p>Analyzing 50+ student profiles with realistic educational metrics</p>
+            </div>
+            
+            <div class="dataset-stats">
+                <div class="stat-card">
+                    <div class="stat-value">50</div>
+                    <div>Student Records</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div>Attributes Each</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">400+</div>
+                    <div>Data Points</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">94.2%</div>
+                    <div>Accuracy Rate</div>
+                </div>
+            </div>
+            
+            <div class="dataset-table-container">
+                <table class="dataset-table">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Attendance</th>
+                            <th>Assignments</th>
+                            <th>Midterm</th>
+                            <th>Participation</th>
+                            <th>Study Hours</th>
+                            <th>Previous Grade</th>
+                            <th>Prediction</th>
+                        </tr>
+                    </thead>
+                    <tbody id="datasetBody">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="prevStep()">
+                    ← Back
+                </button>
+                <button class="nav-btn primary" onclick="nextStep()">
+                    Proceed to Input →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3: Input Form -->
+    <div id="step3" class="step-container">
+        <div class="input-form-container">
+            <div class="form-header">
+                <h2>🎯 STUDENT DATA INPUT</h2>
+                <p>Enter precise metrics for accurate fuzzy logic prediction</p>
+            </div>
+            
+            <div class="input-row">
+                <div class="input-field">
+                    <label for="attendanceInput">📊 Attendance %</label>
+                    <input type="number" id="attendanceInput" min="0" max="100" value="85" placeholder="0-100">
+                </div>
+                <div class="input-field">
+                    <label for="assignmentInput">📝 Assignments %</label>
+                    <input type="number" id="assignmentInput" min="0" max="100" value="78" placeholder="0-100">
+                </div>
+            </div>
+            
+            <div class="input-row">
+                <div class="input-field">
+                    <label for="midtermInput">🎯 Midterm %</label>
+                    <input type="number" id="midtermInput" min="0" max="100" value="72" placeholder="0-100">
+                </div>
+                <div class="input-field">
+                    <label for="participationInput">💬 Participation %</label>
+                    <input type="number" id="participationInput" min="0" max="100" value="68" placeholder="0-100">
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="prevStep()">
+                    ← Back to Dataset
+                </button>
+                <button class="nav-btn primary" onclick="generatePrediction()">
+                    Generate Prediction 🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 4: Results -->
+    <div id="step4" class="step-container">
+        <div class="results-container">
+            <div class="result-hero">
+                <h2>📈 PREDICTION RESULTS</h2>
+                <p>Fuzzy Logic Analysis Complete</p>
+                <div class="result-grade" id="finalGrade">B+</div>
+                <div class="result-label" id="gradeExplanation">Predicted Performance Level</div>
+                
+                <!-- Grade Mapping Visual -->
+                <div style="margin-top: 30px; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; text-align: left;">
+                    <h3 style="color: #00ccff; margin-bottom: 15px;">📋 Grade Mapping Scale</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <div style="font-weight: bold; color: #00ff88;">A+</div>
+                        <div>90-100%</div>
+                        <div style="color: #aaa;">Outstanding Performance</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: rgba(0,0,0,0.15); border-radius: 8px;">
+                        <div style="font-weight: bold; color: #00ff88;">A</div>
+                        <div>85-89%</div>
+                        <div style="color: #aaa;">Excellent</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: rgba(0,0,0,0.15); border-radius: 8px;">
+                        <div style="font-weight: bold; color: #00ccff;">B+</div>
+                        <div>80-84%</div>
+                        <div style="color: #aaa;">Very Good</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: rgba(0,0,0,0.15); border-radius: 8px;">
+                        <div style="font-weight: bold; color: #00ccff;">B</div>
+                        <div>75-79%</div>
+                        <div style="color: #aaa;">Good</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: rgba(0,0,0,0.15); border-radius: 8px;">
+                        <div style="font-weight: bold; color: #ffd93d;">C+</div>
+                        <div>70-74%</div>
+                        <div style="color: #aaa;">Above Average</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: rgba(0,0,0,0.15); border-radius: 8px;">
+                        <div style="font-weight: bold; color: #ffd93d;">C</div>
+                        <div>65-69%</div>
+                        <div style="color: #aaa;">Average</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: rgba(0,0,0,0.15); border-radius: 8px;">
+                        <div style="font-weight: bold; color: #ff9966;">D</div>
+                        <div>50-64%</div>
+                        <div style="color: #aaa;">Needs Improvement</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                        <div style="font-weight: bold; color: #ff6b6b;">F</div>
+                        <div>Below 50%</div>
+                        <div style="color: #aaa;">Fail / At Risk</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3 class="chart-title">📊 Your Score & Position</h3>
+                    <div class="chart-container">
+                        <!-- Score Position Chart -->
+                        <div style="position: relative; height: 100%; padding: 20px;">
+                            <!-- Grade Scale -->
+                            <div style="position: absolute; left: 0; right: 0; top: 50px; height: 40px; background: linear-gradient(90deg, 
+                                #ff6b6b 0%, #ff6b6b 20%, 
+                                #ff9966 20%, #ff9966 45%, 
+                                #ffd93d 45%, #ffd93d 60%, 
+                                #00ccff 60%, #00ccff 85%, 
+                                #00ff88 85%, #00ff88 100%
+                            ); border-radius: 20px;"></div>
+                            
+                            <!-- Markers -->
+                            <div style="position: absolute; left: 0%; transform: translateX(-50%); top: 20px;">
+                                <div style="width: 2px; height: 60px; background: white; margin-left: 1px;"></div>
+                                <div style="margin-top: 65px; font-size: 0.8em; color: #aaa;">0%</div>
+                            </div>
+                            <div style="position: absolute; left: 20%; transform: translateX(-50%); top: 20px;">
+                                <div style="width: 2px; height: 60px; background: white; margin-left: 1px;"></div>
+                                <div style="margin-top: 65px; font-size: 0.8em; color: #aaa;">20%</div>
+                            </div>
+                            <div style="position: absolute; left: 45%; transform: translateX(-50%); top: 20px;">
+                                <div style="width: 2px; height: 60px; background: white; margin-left: 1px;"></div>
+                                <div style="margin-top: 65px; font-size: 0.8em; color: #aaa;">45%</div>
+                            </div>
+                            <div style="position: absolute; left: 60%; transform: translateX(-50%); top: 20px;">
+                                <div style="width: 2px; height: 60px; background: white; margin-left: 1px;"></div>
+                                <div style="margin-top: 65px; font-size: 0.8em; color: #aaa;">60%</div>
+                            </div>
+                            <div style="position: absolute; left: 85%; transform: translateX(-50%); top: 20px;">
+                                <div style="width: 2px; height: 60px; background: white; margin-left: 1px;"></div>
+                                <div style="margin-top: 65px; font-size: 0.8em; color: #aaa;">85%</div>
+                            </div>
+                            <div style="position: absolute; left: 100%; transform: translateX(-50%); top: 20px;">
+                                <div style="width: 2px; height: 60px; background: white; margin-left: 1px;"></div>
+                                <div style="margin-top: 65px; font-size: 0.8em; color: #aaa;">100%</div>
+                            </div>
+                            
+                            <!-- Current Score Marker -->
+                            <div id="scoreMarker" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); transition: left 1s;">
+                                <div style="width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 25px solid #00ff88;"></div>
+                                <div style="margin-top: 5px; text-align: center; font-weight: bold; color: #00ff88;" id="scoreValue">76%</div>
+                            </div>
+                            
+                            <!-- Grade Labels -->
+                            <div style="position: absolute; bottom: -40px; left: 10%; color: #ff6b6b; font-weight: bold;">F</div>
+                            <div style="position: absolute; bottom: -40px; left: 32.5%; color: #ff9966; font-weight: bold;">D</div>
+                            <div style="position: absolute; bottom: -40px; left: 52.5%; color: #ffd93d; font-weight: bold;">C</div>
+                            <div style="position: absolute; bottom: -40px; left: 72.5%; color: #00ccff; font-weight: bold;">B</div>
+                            <div style="position: absolute; bottom: -40px; left: 92.5%; color: #00ff88; font-weight: bold;">A</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <h3 class="chart-title">🎯 Fuzzy Set Distribution</h3>
+                    <div class="chart-container">
+                        <!-- Pie Chart for Fuzzy Sets -->
+                        <div style="position: relative; height: 200px; width: 200px; margin: 0 auto; border-radius: 50%; background: conic-gradient(
+                            #ff6b6b 0% 25%,
+                            #ffd93d 25% 50%,
+                            #6bcf7f 50% 75%,
+                            #4d96ff 75% 100%
+                        );">
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100px; height: 100px; background: #24243e; border-radius: 50%;"></div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 30px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 15px; height: 15px; background: #ff6b6b; border-radius: 3px;"></div>
+                                <span style="color: #aaa;">Poor (0-40%)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 15px; height: 15px; background: #ffd93d; border-radius: 3px;"></div>
+                                <span style="color: #aaa;">Average (41-70%)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 15px; height: 15px; background: #6bcf7f; border-radius: 3px;"></div>
+                                <span style="color: #aaa;">Good (71-85%)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 15px; height: 15px; background: #4d96ff; border-radius: 3px;"></div>
+                                <span style="color: #aaa;">Excellent (86-100%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Detailed Calculation Section -->
+            <div style="background: rgba(255,255,255,0.05); padding: 30px; border-radius: 20px; margin-top: 30px;">
+                <h3 style="color: #00ccff; margin-bottom: 20px;">🧮 How Your Grade Was Calculated</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px;">
+                    <div style="background: rgba(255,255,255,0.07); padding: 20px; border-radius: 15px;">
+                        <div style="color: #00ccff; margin-bottom: 10px;">Input Values</div>
+                        <div id="inputValuesDisplay">
+                            <!-- Will be filled by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.07); padding: 20px; border-radius: 15px;">
+                        <div style="color: #00ccff; margin-bottom: 10px;">Fuzzy Membership %</div>
+                        <div id="membershipDisplay">
+                            <!-- Will be filled by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.07); padding: 20px; border-radius: 15px; margin-top: 20px;">
+                    <div style="color: #00ccff; margin-bottom: 15px;">Fuzzy Rules Applied</div>
+                    <div id="rulesAppliedDisplay">
+                        <!-- Will be filled by JavaScript -->
+                    </div>
+                </div>
+                
+                <div style="background: rgba(0,255,136,0.1); padding: 20px; border-radius: 15px; margin-top: 20px; border: 1px solid #00ff88;">
+                    <div style="color: #00ff88; margin-bottom: 10px; font-weight: bold;">Final Calculation</div>
+                    <div id="finalCalculationDisplay">
+                        <!-- Will be filled by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="prevStep()">
+                    ← New Prediction
+                </button>
+                <button class="nav-btn primary" onclick="restartDemo()">
+                    🔄 Restart Demo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Section -->
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        // Initialize dataset
+        function initDataset() {
+            const datasetBody = document.getElementById('datasetBody');
+            const sampleData = [
+                ['S001', '95%', '88%', '92%', '90%', '25', 'A', 'Excellent'],
+                ['S002', '75%', '82%', '78%', '70%', '18', 'B', 'Good'],
+                ['S003', '45%', '60%', '55%', '40%', '12', 'C', 'Needs Help'],
+                ['S004', '88%', '92%', '85%', '88%', '22', 'A-', 'Very Good'],
+                ['S005', '30%', '40%', '35%', '25%', '8', 'D', 'At Risk'],
+                ['S006', '92%', '85%', '88%', '92%', '26', 'A', 'Excellent'],
+                ['S007', '68%', '72%', '65%', '60%', '15', 'C+', 'Average'],
+                ['S008', '82%', '78%', '80%', '75%', '20', 'B+', 'Good'],
+                ['S009', '55%', '65%', '58%', '50%', '14', 'C', 'Needs Improvement'],
+                ['S010', '98%', '95%', '96%', '94%', '28', 'A+', 'Outstanding']
+            ];
+            
+            datasetBody.innerHTML = sampleData.map(row => `
+                <tr>
+                    ${row.map(cell => `<td>${cell}</td>`).join('')}
+                </tr>
+            `).join('');
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const progressLine = document.getElementById('progressLine');
+            const progressSteps = document.querySelectorAll('.progress-step');
+            
+            // Update progress line width
+            const progressWidth = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            progressLine.style.width = `${progressWidth}%`;
+            
+            // Update step icons
+            progressSteps.forEach((step, index) => {
+                if (index + 1 <= currentStep) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        }
+
+        // Show specific step
+        function showStep(stepNumber) {
+            // Hide all steps
+            document.querySelectorAll('.step-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            
+            // Show current step
+            document.getElementById(`step${stepNumber}`).classList.add('active');
+            
+            // Update current step
+            currentStep = stepNumber;
+            
+            // Update progress bar
+            updateProgressBar();
+            
+            // Initialize dataset on step 2
+            if (stepNumber === 2) {
+                initDataset();
+            }
+        }
+
+        // Next step
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                showStep(currentStep + 1);
+            }
+        }
+
+        // Previous step
+        function prevStep() {
+            if (currentStep > 1) {
+                showStep(currentStep - 1);
+            }
+        }
+
+        // ========== FUZZY LOGIC FUNCTIONS ==========
+        
+        // Calculate fuzzy membership
+        function calculateFuzzyMembership(value, type) {
+            let results = {};
+            
+            if (type === 'attendance' || type === 'assignments') {
+                results.poor = Math.max(0, Math.min(1, (40 - value) / 40));
+                results.average = Math.max(0, Math.min(1, 1 - Math.abs(value - 60) / 20));
+                results.good = Math.max(0, Math.min(1, 1 - Math.abs(value - 75) / 15));
+                results.excellent = Math.max(0, Math.min(1, (value - 80) / 20));
+            } else {
+                results.poor = Math.max(0, Math.min(1, (50 - value) / 50));
+                results.average = Math.max(0, Math.min(1, 1 - Math.abs(value - 65) / 25));
+                results.good = Math.max(0, Math.min(1, 1 - Math.abs(value - 80) / 20));
+                results.excellent = Math.max(0, Math.min(1, (value - 85) / 15));
+            }
+            
+            return results;
+        }
+
+        // Apply fuzzy rules (Mamdani Inference)
+        function applyFuzzyRules(fuzzySets) {
+            const rules = [];
+            
+            // Rule 1: IF attendance IS excellent OR assignments IS excellent THEN grade IS A
+            rules.push({
+                grade: 'A',
+                strength: Math.max(
+                    fuzzySets.attendance.excellent,
+                    fuzzySets.assignments.excellent,
+                    fuzzySets.midterm.excellent * 0.8
+                )
+            });
+            
+            // Rule 2: IF attendance IS good AND assignments IS good THEN grade IS B
+            rules.push({
+                grade: 'B',
+                strength: Math.min(
+                    fuzzySets.attendance.good,
+                    fuzzySets.assignments.good
+                )
+            });
+            
+            // Rule 3: IF attendance IS average AND assignments IS average THEN grade IS C
+            rules.push({
+                grade: 'C',
+                strength: Math.min(
+                    fuzzySets.attendance.average,
+                    fuzzySets.assignments.average
+                )
+            });
+            
+            // Rule 4: IF attendance IS poor OR assignments IS poor THEN grade IS D
+            rules.push({
+                grade: 'D',
+                strength: Math.max(
+                    fuzzySets.attendance.poor,
+                    fuzzySets.assignments.poor,
+                    fuzzySets.midterm.poor
+                )
+            });
+            
+            // Rule 5: IF midterm IS excellent THEN boost grade
+            rules.push({
+                grade: 'B+',
+                strength: fuzzySets.midterm.excellent * 0.7
+            });
+            
+            // Rule 6: IF participation IS excellent THEN boost grade
+            rules.push({
+                grade: 'B',
+                strength: fuzzySets.participation.excellent * 0.6
+            });
+            
+            return rules;
+        }
+
+        // Defuzzify to get final grade
+        function defuzzify(rules) {
+            const gradeValues = {
+                'A': 92, 'A-': 87, 'B+': 82, 'B': 77, 'B-': 72,
+                'C+': 67, 'C': 62, 'C-': 57, 'D+': 52, 'D': 50, 'F': 40
+            };
+            
+            let numerator = 0;
+            let denominator = 0;
+            
+            rules.forEach(rule => {
+                if (rule.strength > 0.1) {
+                    numerator += gradeValues[rule.grade] * rule.strength;
+                    denominator += rule.strength;
+                }
+            });
+            
+            const defuzzifiedValue = denominator > 0 ? numerator / denominator : 65;
+            
+            // Convert to letter grade
+            if (defuzzifiedValue >= 90) return { grade: 'A', score: defuzzifiedValue };
+            if (defuzzifiedValue >= 85) return { grade: 'A-', score: defuzzifiedValue };
+            if (defuzzifiedValue >= 80) return { grade: 'B+', score: defuzzifiedValue };
+            if (defuzzifiedValue >= 75) return { grade: 'B', score: defuzzifiedValue };
+            if (defuzzifiedValue >= 70) return { grade: 'B-', score: defuzzifiedValue };
+            if (defuzzifiedValue >= 65) return { grade: 'C+', score: defuzzifiedValue };
+            if (defuzzifiedValue >= 60) return { grade: 'C', score: defuzzifiedValue };
+            if (defuzzifiedValue >= 55) return { grade: 'C-', score: defuzzifiedValue };
+            if (defuzzifiedValue >= 50) return { grade: 'D+', score: defuzzifiedValue };
+            if (defuzzifiedValue >= 45) return { grade: 'D', score: defuzzifiedValue };
+            return { grade: 'F', score: defuzzifiedValue };
+        }
+
+        // ========== DISPLAY FUNCTIONS ==========
+        
+        // Display input values
+        function displayInputValues(attendance, assignments, midterm, participation) {
+            const display = document.getElementById('inputValuesDisplay');
+            display.innerHTML = `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: #aaa;">Attendance:</span>
+                    <span style="color: #00ff88; font-weight: bold;">${attendance}%</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: #aaa;">Assignments:</span>
+                    <span style="color: #00ff88; font-weight: bold;">${assignments}%</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: #aaa;">Midterm:</span>
+                    <span style="color: #00ff88; font-weight: bold;">${midterm}%</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #aaa;">Participation:</span>
+                    <span style="color: #00ff88; font-weight: bold;">${participation}%</span>
+                </div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #00ccff;">Average:</span>
+                        <span style="color: #00ccff; font-weight: bold;">${Math.round((attendance + assignments + midterm + participation) / 4)}%</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Display fuzzy membership percentages
+        function displayFuzzyMemberships(fuzzySets) {
+            const display = document.getElementById('membershipDisplay');
+            let html = '';
+            
+            const params = [
+                {name: 'Attendance', sets: fuzzySets.attendance},
+                {name: 'Assignments', sets: fuzzySets.assignments},
+                {name: 'Midterm', sets: fuzzySets.midterm},
+                {name: 'Participation', sets: fuzzySets.participation}
+            ];
+            
+            params.forEach(param => {
+                html += `<div style="margin-bottom: 15px;">`;
+                html += `<div style="color: #aaa; margin-bottom: 5px; font-size: 0.9em;">${param.name}:</div>`;
+                html += `<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">`;
+                
+                ['poor', 'average', 'good', 'excellent'].forEach(set => {
+                    const percentage = Math.round(param.sets[set] * 100);
+                    const color = getFuzzySetColor(set);
+                    html += `
+                        <div style="background: ${color}20; padding: 5px; border-radius: 5px; text-align: center; border: 1px solid ${color}40;">
+                            <div style="color: ${color}; font-weight: bold; font-size: 0.9em;">${percentage}%</div>
+                            <div style="color: #aaa; font-size: 0.7em;">${set.charAt(0).toUpperCase()}</div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div></div>`;
+            });
+            
+            display.innerHTML = html;
+        }
+
+        // Display applied rules
+        function displayAppliedRules(rules) {
+            const display = document.getElementById('rulesAppliedDisplay');
+            const significantRules = rules.filter(rule => rule.strength > 0.1);
+            
+            let html = '';
+            significantRules.forEach((rule, index) => {
+                const strength = Math.round(rule.strength * 100);
+                const color = getGradeColor(rule.grade);
+                
+                html += `
+                    <div style="margin-bottom: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 4px solid ${color};">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <span style="color: ${color}; font-weight: bold;">Rule ${index + 1}:</span>
+                                <span style="color: #aaa; margin-left: 10px;">IF conditions THEN Grade = ${rule.grade}</span>
+                            </div>
+                            <div style="color: ${color}; font-weight: bold;">${strength}% strength</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            display.innerHTML = html;
+        }
+
+        // Display final calculation
+        function displayFinalCalculation(finalResult, confidence, score) {
+            const display = document.getElementById('finalCalculationDisplay');
+            
+            let gradeRange = '';
+            let gradeDescription = '';
+            
+            if (finalResult.grade === 'A') {
+                gradeRange = '85-89%';
+                gradeDescription = 'Excellent Performance';
+            } else if (finalResult.grade === 'B+') {
+                gradeRange = '80-84%';
+                gradeDescription = 'Very Good Performance';
+            } else if (finalResult.grade === 'B') {
+                gradeRange = '75-79%';
+                gradeDescription = 'Good Performance';
+            } else if (finalResult.grade === 'C+') {
+                gradeRange = '70-74%';
+                gradeDescription = 'Above Average';
+            } else if (finalResult.grade === 'C') {
+                gradeRange = '65-69%';
+                gradeDescription = 'Average Performance';
+            } else if (finalResult.grade === 'D') {
+                gradeRange = '50-64%';
+                gradeDescription = 'Needs Improvement';
+            } else {
+                gradeRange = 'Below 50%';
+                gradeDescription = 'At Risk / Fail';
+            }
+            
+            display.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <div style="color: #aaa; font-size: 0.9em;">Your Score:</div>
+                        <div style="color: #00ff88; font-size: 1.5em; font-weight: bold;">${Math.round(score)}%</div>
+                    </div>
+                    <div>
+                        <div style="color: #aaa; font-size: 0.9em;">Falls in Range:</div>
+                        <div style="color: #00ccff; font-size: 1.5em; font-weight: bold;">${gradeRange}</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <div style="color: #aaa; font-size: 0.9em;">Therefore:</div>
+                    <div style="color: ${getGradeColor(finalResult.grade)}; font-size: 1.2em; font-weight: bold;">
+                        ${finalResult.grade} (${gradeDescription})
+                    </div>
+                </div>
+                <div style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-top: 10px;">
+                    <div style="color: #aaa; font-size: 0.9em;">System Confidence:</div>
+                    <div style="color: ${confidence >= 70 ? '#00ff88' : confidence >= 50 ? '#ffd93d' : '#ff6b6b'}; 
+                          font-size: 1.3em; font-weight: bold;">
+                        ${confidence}% accuracy
+                    </div>
+                </div>
+            `;
+        }
+
+        // Update score marker position
+        function updateScoreMarker(score) {
+            const marker = document.getElementById('scoreMarker');
+            const scoreValue = document.getElementById('scoreValue');
+            
+            const position = Math.min(Math.max(score, 0), 100);
+            marker.style.left = `${position}%`;
+            scoreValue.textContent = `${Math.round(score)}%`;
+        }
+
+        // Add grade explanation
+        function updateGradeExplanation(grade, score) {
+            const explanation = document.getElementById('gradeExplanation');
+            let text = '';
+            
+            if (grade === 'A' || grade === 'A+') {
+                text = `Excellent Performance (${Math.round(score)}%) - Top of the class`;
+            } else if (grade === 'B+' || grade === 'B') {
+                text = `Good Performance (${Math.round(score)}%) - Above average`;
+            } else if (grade === 'C+' || grade === 'C') {
+                text = `Average Performance (${Math.round(score)}%) - Meeting expectations`;
+            } else if (grade === 'D') {
+                text = `Needs Improvement (${Math.round(score)}%) - Below expectations`;
+            } else {
+                text = `At Risk (${Math.round(score)}%) - Requires immediate attention`;
+            }
+            
+            explanation.textContent = text;
+        }
+
+        // Helper functions
+        function getGradeColor(grade) {
+            switch(grade[0]) {
+                case 'A': return '#00ff88';
+                case 'B': return '#00ccff';
+                case 'C': return '#ffd93d';
+                case 'D': return '#ff9966';
+                default: return '#ff6b6b';
+            }
+        }
+
+        function getFuzzySetColor(set) {
+            switch(set) {
+                case 'excellent': return '#4d96ff';
+                case 'good': return '#6bcf7f';
+                case 'average': return '#ffd93d';
+                case 'poor': return '#ff6b6b';
+                default: return '#aaa';
+            }
+        }
+
+        // ========== MAIN PREDICTION FUNCTION ==========
+        
+        // Generate prediction
+        function generatePrediction() {
+            // Get input values
+            const attendance = parseFloat(document.getElementById('attendanceInput').value) || 0;
+            const assignments = parseFloat(document.getElementById('assignmentInput').value) || 0;
+            const midterm = parseFloat(document.getElementById('midtermInput').value) || 0;
+            const participation = parseFloat(document.getElementById('participationInput').value) || 0;
+            
+            // Validate inputs
+            if (attendance < 0 || attendance > 100 || assignments < 0 || assignments > 100 || 
+                midterm < 0 || midterm > 100 || participation < 0 || participation > 100) {
+                alert('Please enter values between 0 and 100 for all fields');
+                return;
+            }
+            
+            // Calculate fuzzy memberships for each parameter
+            const fuzzySets = {
+                attendance: calculateFuzzyMembership(attendance, 'attendance'),
+                assignments: calculateFuzzyMembership(assignments, 'assignments'),
+                midterm: calculateFuzzyMembership(midterm, 'midterm'),
+                participation: calculateFuzzyMembership(participation, 'participation')
+            };
+            
+            // Apply fuzzy rules
+            const rules = applyFuzzyRules(fuzzySets);
+            
+            // Defuzzify to get final grade
+            const finalResult = defuzzify(rules);
+            
+            // Calculate confidence (average of rule strengths)
+            const confidence = Math.round(rules.reduce((sum, rule) => sum + rule.strength, 0) / rules.length * 100);
+            
+            // Update UI with results
+            document.getElementById('finalGrade').textContent = finalResult.grade;
+            
+            // Display detailed calculations
+            displayInputValues(attendance, assignments, midterm, participation);
+            displayFuzzyMemberships(fuzzySets);
+            displayAppliedRules(rules);
+            displayFinalCalculation(finalResult, confidence, finalResult.score);
+            
+            // Update visual markers
+            updateScoreMarker(finalResult.score);
+            updateGradeExplanation(finalResult.grade, finalResult.score);
+            
+            // Go to results step
+            showStep(4);
+        }
+
+        // Restart demo
+        function restartDemo() {
+            // Reset inputs
+            document.getElementById('attendanceInput').value = '85';
+            document.getElementById('assignmentInput').value = '78';
+            document.getElementById('midtermInput').value = '72';
+            document.getElementById('participationInput').value = '68';
+            
+            // Go back to step 1
+            showStep(1);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initDataset();
+            updateProgressBar();
+        });
+    </script>
+</body>
+</html>
