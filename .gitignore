@@ -10,3 +10,8 @@ venv/
 
 # Data
 *.csv
+
+# Local editor and runtime artifacts
+.vscode/
+ga_run.log
+python_marker.txt
