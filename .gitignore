@@ -4,13 +4,6 @@ __pycache__/
 env/
 venv/
 
-# Database
-*.db
-*.sqlite
-
-# Data
-*.csv
-
 # Local editor and runtime artifacts
 .vscode/
 ga_run.log
